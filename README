@@ -98,3 +98,22 @@ Restarting the nrpe service “service nagios-nrpe-server restart”
  
 Commands have been defined in the file “/usr/local/nagios/etc/objects/commands.cfg”
 Service to be monitored in Nagios is defined in the file “/usr/local/nagios/etc/servers/zimbra10.cfg“
+
+  ## Creation of Email test users
+Switch to zimbra user by issuing command "sudo su - zimbra"
+check zimbra service status "zmcontrol status"
+create user "zmprov ca test1@example.com test123"
+create another user "zmprov ca test2@example.com test123"
+
+  ## Email connection testing
+  login to web interface by typing URL "https://zimbra10.example.com"
+  Username: test1@example.com
+  Password: test123
+  
+  Compose New message to be sent to test2@example.com
+  
+  Logout and login with user test2@example.com with below credentials:
+  Username: test2@example.com
+  Password: test123
+  
+  Verify that mail sent by test1@example.com has arrived to inbox.
