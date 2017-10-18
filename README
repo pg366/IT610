@@ -1,1 +1,100 @@
 ## All the steps for MailServer installation and configuration has been mentioned in this file 
+
+  ## /etc/network/interfaces
+One Static IP needs to be assigned for the proper working of MailServer (zimbra). 
+One Host-Only ethernet card has been added in the Virtualbox for our VM and assigned the IP “192.168.56.1” with subnet.
+Changes has been done in the configuration file for “interfaces” and added Network card (enp0s3) has been configured as Static IP.
+Services has been restarted for networking by issuing the command “/etc/init.d/networking restart”
+
+  ## /etc/hostname 
+Hostname has been changed for the VM to zimbra10.example.com by editing the file /etc/hostname
+Hostname changes can be done through command line “hostnamectl set-hostname zimbra10.example.com”
+Services has been restarted by issuing command “/etc/init.d/hostname.sh restart”
+System can be rebooted also for the same.
+
+ 
+  ## /etc/hosts
+Changes has been made in /etc/hosts file for mapping the Static IP to hostname zimbra10.example.com
+  
+  ## dnsmasq
+Dnsmasq has been installed by issuing command “apt-get install dnsmasq”
+Changes has been made in dnsmasq config file “/etc/dnsmasq.conf” that are mentioned at the end of this configuration file 
+Services has been restarted by issuing command “service dnsmasq restart”
+
+  ## Testing for dns resolution
+dig mx example.com
+dig mx zimbra10.example.com
+dig  zimbra10.example.com
+
+  ## Installation of Zimbra MailServer Suite
+Tarball for zimbra has been downloaded, extracted and executed as below:
+tar xvzf zcs-8.7.10_GA_1829.UBUNTU16_64.20170524161336.tgz 
+cd ~/zcs-8.7.10_GA_1829.UBUNTU16_64.20170524161336/
+./install.sh -u
+
+During the installation of zimbra various parameter has to be set as per the questions asked on the standard input.
+
+  ## Installation of nagios
+Pre-requisites has to be installed and completed first for nagios installation:
+
+  ** Packages installation
+	apt-get install apache2 php7.0-gd libapache2-mod-php7.0 build-essential libgd2-xpm-dev
+
+  ** Creating a new user and group
+useradd nagios
+groupadd nagcmd
+usermod -G nagcmd nagios
+usermod -a -G nagcmd www-data
+
+  ** Compiling and installing Nagios
+tar xvf nagios-4.3.4.tar 
+cd nagios-4.3.4/
+./configure -with-nagios-group=nagios -with-command-group=nagcmd
+make all
+make install
+make install-init
+make install-config
+make install-commandmode
+make install-webconf
+
+  ** Changing the e-mail address 
+Configuration file “/usr/local/nagios/etc/objects/contacts.cfg”
+
+  ** Configuring the Web interface, creating a user
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+a2enmod cgi
+service apache2 restart
+
+  ** Compiling and installing of Nagios plugins
+tar xvf nagios-plugins-2.2.1.tar 
+cd nagios-plugins-2.2.1/
+./configure -with-nagios-user=nagios -with-nagios-group=nagios
+make
+make install
+
+  ** Start Nagios
+ln -s /etc/init.d/nagios /etc/rcS.d/S99nagios
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg 
+/etc/init.d/nagios start
+
+  ** nagios.service file creation
+File “/etc/systemd/system/nagios.service” has been created and configured.
+
+  ** Edit the nagios configuration file
+Copied a skeleton copy of configuration from /etc/init.d/skeleton to /etc/init.d/nagios and changes has been made thereafter in the last file for nagios.
+Appropriate permission for file has been assigned by issuing command “chmod +x /etc/init.d/nagios”
+ 
+  ** Apache2 configuration 
+Configuration has been done in file “/etc/apache2/sites-enabled/nagios.conf” for accessing it from web.
+Service for nagios has been restarted by issuing command “service nagios start”
+
+  ## NRPE server and plugin installation
+
+apt-get install nagios-nrpe-server nagios-nrpe-plugin 
+Configuration file “/etc/nagios/nrpe.cfg”
+Restarting the nrpe service “service nagios-nrpe-server restart” 
+ 
+  ## Manual Configuration for added services to be monitored in nagios
+ 
+Commands have been defined in the file “/usr/local/nagios/etc/objects/commands.cfg”
+Service to be monitored in Nagios is defined in the file “/usr/local/nagios/etc/servers/zimbra10.cfg“
