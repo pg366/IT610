@@ -1,0 +1,17 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+#### path to file is /etc/network/interfaces ####
+auto lo
+iface lo inet loopback
+
+#NAT
+auto enp0s3
+iface enp0s3 inet dhcp
+
+##HOST-ONLY
+auto enp0s8
+iface enp0s8 inet static
+address 192.168.56.1
+network 192.168.56.0
+netmask 255.255.255.0
+#dns-nameservers 127.0.0.1
+#dns-nameservers 8.8.8.8
