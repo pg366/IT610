@@ -124,3 +124,7 @@ create another user "zmprov ca test2@example.com test123"
 
   ## Changes in the configuration for Email notification
 file command.cfg has been modified for email notification using mailx
+
+  ## Testing for Email notification
+ Stopped the ssh service and checked the notification in "configuration defined contacts" name, here it is "test1@example.com".
+ Mail has been delivered to the inbox stating the down state of ssh service.
