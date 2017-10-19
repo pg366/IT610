@@ -117,3 +117,10 @@ create another user "zmprov ca test2@example.com test123"
   Password: test123
   
   Verify that mail sent by test1@example.com has arrived to inbox.
+
+  ## Installing mailx
+ mailx has been installed to send notification for nagios events to user mail id
+	apt-get install mailutils
+
+  ## Changes in the configuration for Email notification
+file command.cfg has been modified for email notification using mailx
